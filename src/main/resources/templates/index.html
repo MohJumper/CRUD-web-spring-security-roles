@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+<html
+      xmlns:th="http://www.thymeleaf.org" 
+       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
@@ -10,6 +11,20 @@
 </head>
 <body>
 <div align="center">
+	
+	<div sec:authorize="isAuthenticated">
+		Welcome back <b><span sec:authentication="name">Username</span></b>
+		<!-- the above shows the user logged in here 
+		Below show the role of the user
+		 -->
+		 &nbsp;
+		 <span sec:authentication="principal.authorities">Roles</span>
+		 
+		<form th:action="@{/logout}" method="post">
+		    <input type="submit" value="Logout" />
+		</form>
+		 
+	</div>
     <h1>Sales Records</h1>
     <a href="/new" class="btn btn-success">Enter New Sale</a>
     
@@ -21,7 +36,7 @@
                 <th>Item Name</th>
                 <th>Quantity</th>
                 <th>Amount</th>
-                <th>Actions</th>
+                <th sec:authorize="hasAnyAuthority('ADMIN', 'EDITOR')">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -30,7 +45,7 @@
                 <td th:text="${sale.item}">Item Name</td>
                 <td th:text="${sale.quantity}">Quantity</td>
                 <td th:text="${sale.amount}">Amount</td>
-                <td>
+                <td sec:authorize="hasAnyAuthority('ADMIN', 'EDITOR')">
                     <!-- <a th:href="/@{'/edit/' + ${sale.id}}">Edit</a>
                     &nbsp;&nbsp;&nbsp;
                     <a th:href="/@{'/delete/' + ${sale.id}}">Delete</a> 
@@ -49,7 +64,7 @@
                     -->
                     <a th:href="@{/edit/{id}(id=${sale.id})}"  class="btn btn-default" >Edit</a>
                      &nbsp;&nbsp;&nbsp;
-        			<a th:href="@{/delete/{id}(id=${sale.id})}"  class="btn btn-default">Delete</a>
+        			<a sec:authorize="hasAuthority('ADMIN')" th:href="@{/delete/{id}(id=${sale.id})}"  class="btn btn-default">Delete</a>
         			
                 </td>
             </tr>
